@@ -12,11 +12,13 @@ class AcfunspiderItem(Item):
     pass
 
 class UserItem(Item):
+    user_id = Field()
     nick_name = Field()
     url = Field()
     video_number = Field()
     fans_number = Field()
     follows_number = Field()
+    signature = Field()
 
 class VideoItem(Item):
     title = Field()

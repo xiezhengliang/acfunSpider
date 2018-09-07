@@ -6,7 +6,9 @@
 # http://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-
+from scrapy.downloadermiddlewares.useragent import UserAgentMiddleware
+from acfunSpider import userAgent
+import random
 
 class AcfunspiderSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -54,3 +56,18 @@ class AcfunspiderSpiderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+# UserAgent轮转
+class userAgentDownloadMiddleware(UserAgentMiddleware):
+    def __init__(self, user_agent=''):
+        self.user_agent = user_agent
+
+    def process_request(self, request, spider):
+        # ua = random.choice(self.user_agent_list)
+        # if spider.name == 'toutiao':
+        #     self.user_agent = random.choice(userAgent.user_agent_list)
+        # elif spider.name == 'toutiao_app':
+        self.user_agent = random.choice(userAgent.user_agent_list)
+        print("userAgent:"+self.user_agent)
+        request.headers.setdefault("User-Agent", self.user_agent)
