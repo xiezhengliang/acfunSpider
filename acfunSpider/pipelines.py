@@ -52,7 +52,7 @@ class AcfunspiderPipeline(object):
         video_row = cursor.fetchone()
         if video_row:
             update_video = """update video set watch_number = %s, barrage_number = %s"""
-            cursor.execute(update_video, (int(item["watch_number"]), int(item["barrage_number"])))
+            cursor.execute(update_video, (item["watch_number"], item["barrage_number"]))
             cursor.close()
             db.commit()
         else:
@@ -60,7 +60,7 @@ class AcfunspiderPipeline(object):
                         insert into video(user_id, title, data_url, watch_number, barrage_number,time)
                         VALUE(%s, %s, %s, %s, %s,%s)"""
             cursor.execute(insert_video_mysql, (
-                int(item["user_id"]), item["title"], item["data_url"], item["watch_number"],
+                item["user_id"], item["title"], item["data_url"], item["watch_number"],
                 item["barrage_number"], item['time']))
             cursor.close()
             db.commit()

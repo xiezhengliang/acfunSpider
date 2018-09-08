@@ -45,9 +45,13 @@ class Spider(CrawlSpider):
         item['user_id'] = int(id)
         item['nick_name'] = str(username[0]).replace('"username":"', "").replace('",', "")
         item['signature'] = str(signature[0]).replace('"signature":"', "").replace('",', "")
-        item['video_number'] = str(str(contributeCount[0]).replace('"contributeCount":', "").replace(',', ""))
-        item['fans_number'] = str(str(followedCount[0]).replace('"followedCount":', "").replace(',', ""))
-        item['follows_number'] = str(str(followingCount[0]).replace('"followingCount":', "").replace(',', ""))
+        item['video_number'] = int(
+            str(contributeCount[0]).replace('"contributeCount":', "").replace(',', "").replace(".", "").replace("万",
+                                                                                                                ""))
+        item['fans_number'] = int(
+            str(followedCount[0]).replace('"followedCount":', "").replace(',', "").replace(".", "").replace("万", ""))
+        item['follows_number'] = int(
+            str(followingCount[0]).replace('"followingCount":', "").replace(',', "").replace(".", "").replace("万", ""))
         item['url'] = url
         total_page = int(str(totalPage).replace('"totalPage":', "").replace(',', ""))
         # clearfix = Selector(text=html).xpath("//div[@class='clearfix']").extract()
@@ -77,12 +81,10 @@ class Spider(CrawlSpider):
             data_title = Selector(text=v).xpath("//@data-title").extract()[0]
             watch_number = Selector(text=v).xpath("//p[@class='crumbs']//span[@class='nums']/text()").extract()[0]
             barrage_number = Selector(text=v).xpath("//p[@class='crumbs']//span[@class='nums']/text()").extract()[1]
-            item['user_id'] = user_id
+            item['user_id'] = int(user_id)
             item['title'] = data_title
-            item['watch_number'] = watch_number
-            item['barrage_number'] = barrage_number
+            item['watch_number'] = int(watch_number.replace(".", "").replace("万", ""))
+            item['barrage_number'] = int(barrage_number.replace(".", "").replace("万", ""))
             item['time'] = datetime.datetime.strptime(data_date, "%Y/%m/%d")
             item['data_url'] = data_url
             yield item
-
-
