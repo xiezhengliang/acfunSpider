@@ -16,7 +16,7 @@ NEWSPIDER_MODULE = 'acfunSpider.spiders'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = 'acfunSpider (+http://www.yourdomain.com)'
-
+LOG_LEVEL = 'INFO'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 

@@ -22,13 +22,14 @@ DROP TABLE IF EXISTS `video`;
 
 CREATE TABLE `video` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
   `title` varchar(500) DEFAULT NULL COMMENT '标题',
-  `data_url` varchar(200) DEFAULT NULL COMMENT '视频地址',
-  `watch_number` int(11) DEFAULT NULL COMMENT '观看数',
-  `barrage_number` int(11) DEFAULT NULL COMMENT '弹幕数',
+  `data_url` varchar(500) DEFAULT NULL COMMENT '视频地址',
+  `watch_number` varchar(11) DEFAULT NULL COMMENT '观看数',
+  `barrage_number` varchar(11) DEFAULT NULL COMMENT '弹幕数',
   `time` datetime DEFAULT NULL COMMENT '投稿时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=62585 DEFAULT CHARSET=utf8;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

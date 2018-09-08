@@ -22,13 +22,15 @@ DROP TABLE IF EXISTS `user`;
 
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL COMMENT '用户id',
   `nick_name` varchar(50) NOT NULL COMMENT '用户名',
+  `signature` varchar(500) DEFAULT NULL,
   `url` varchar(100) DEFAULT NULL COMMENT '主页地址',
-  `video_number` int(11) DEFAULT NULL COMMENT '投稿数',
-  `fans_number` int(11) DEFAULT NULL COMMENT '粉丝数',
-  `follows_number` int(11) DEFAULT NULL COMMENT '关注数',
+  `video_number` varchar(11) DEFAULT NULL COMMENT '投稿数',
+  `fans_number` varchar(11) DEFAULT NULL COMMENT '粉丝数',
+  `follows_number` varchar(11) DEFAULT NULL COMMENT '关注数',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2392 DEFAULT CHARSET=utf8;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

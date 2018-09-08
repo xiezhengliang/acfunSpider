@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import pymysql
 from twisted.enterprise import adbapi
-from .items import UserItem
+from .items import UserItem, VideoItem
+
 
 # Define your item pipelines here
 #
@@ -10,37 +11,17 @@ from .items import UserItem
 
 
 class AcfunspiderPipeline(object):
-    def __init__(self, dbpool):
-        self.dbpool = dbpool
 
-    @classmethod
-    def from_settings(cls, settings):
-        dbparms = dict(
-            host=settings["MYSQL_HOST"],
-            db=settings["MYSQL_DBNAME"],
-            user=settings["MYSQL_USER"],
-            password=settings["MYSQL_PASSWORD"],
-            charset="utf8",
-            cursorclass=pymysql.cursors.DictCursor,  # 指定 curosr 类型
-            use_unicode=True,
-        )
-        # 指定擦做数据库的模块名和数据库参数
-        dbpool = adbapi.ConnectionPool("pymysql", **dbparms)
-        return cls(dbpool)
-
-    # 使用twisted将mysql插入变成异步执行
     def process_item(self, item, spider):
-        if isinstance(item,UserItem):
-            # 指定操作方法和操作的数据
-            query = self.dbpool.runInteraction(self.user_do_insert, item)
-            # 指定异常处理方法
-            query.addErrback(self.handle_error, item, spider)  # 处理异常
+        db = pymysql.connect(user="root", passwd="123456", db="acfun", host="127.0.0.1", port=int(3306),
+                             charset="utf8", use_unicode=True)
+        if isinstance(item, UserItem):
+            self.user_do_insert(db, item)
+        if isinstance(item, VideoItem):
+            self.video_do_insert(db, item)
 
-    def handle_error(self, failure, item, spider):
-        # 处理异步插入的异常
-        print(failure)
-
-    def user_do_insert(self, cursor, item):
+    def user_do_insert(self, db, item):
+        cursor = db.cursor()
         sel_sql = "SELECT user_id FROM user WHERE user_id = " + str(item['user_id'])
         cursor.execute(sel_sql)
         user_row = cursor.fetchone()
@@ -49,13 +30,37 @@ class AcfunspiderPipeline(object):
                 update user set signature = %s, video_number = %s,fans_number = %s,follows_number = %s
             """
             cursor.execute(update_user, (
-                 item["signature"], item["video_number"], item["fans_number"], item["follows_number"]))
-            print("更新 id="+str(item['user_id']))
+                item["signature"], item["video_number"], item["fans_number"], item["follows_number"]))
+            db.commit()
+            cursor.close()
         else:
             insert_mysql = """
                 insert into user(user_id, nick_name, signature, url, video_number, fans_number, follows_number)
                 VALUE(%s, %s, %s, %s, %s, %s, %s)
             """
             cursor.execute(insert_mysql, (
-            item["user_id"], item["nick_name"], item["signature"], item["url"], item["video_number"], item["fans_number"],
-            item["follows_number"]))
+                item["user_id"], item["nick_name"], item["signature"], item["url"], item["video_number"],
+                item["fans_number"],
+                item["follows_number"]))
+            db.commit()
+            cursor.close()
+
+    def video_do_insert(self, db, item):
+        cursor = db.cursor()
+        sel_video_sql = "SELECT data_url FROM video WHERE data_url = '" + str(item['data_url']) + "'"
+        cursor.execute(sel_video_sql)
+        video_row = cursor.fetchone()
+        if video_row:
+            update_video = """update video set watch_number = %s, barrage_number = %s"""
+            cursor.execute(update_video, (int(item["watch_number"]), int(item["barrage_number"])))
+            cursor.close()
+            db.commit()
+        else:
+            insert_video_mysql = """
+                        insert into video(user_id, title, data_url, watch_number, barrage_number,time)
+                        VALUE(%s, %s, %s, %s, %s,%s)"""
+            cursor.execute(insert_video_mysql, (
+                int(item["user_id"]), item["title"], item["data_url"], item["watch_number"],
+                item["barrage_number"], item['time']))
+            cursor.close()
+            db.commit()

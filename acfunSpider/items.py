@@ -21,6 +21,7 @@ class UserItem(Item):
     signature = Field()
 
 class VideoItem(Item):
+    user_id = Field()
     title = Field()
     data_url = Field()
     watch_number = Field()
